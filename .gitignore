@@ -1,0 +1,4 @@
+infra/.terraform
+infra/.terraform.lock.hcl
+venv
+app/device-crt-and-keys

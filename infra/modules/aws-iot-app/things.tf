@@ -18,6 +18,8 @@ resource "aws_iot_thing" "aws_subscriber_thing" {
 }
 
 
+
+
 # resource "aws_iot_topic_rule" "rule" {
 #   name        = "${local.project_name}Kinesis"
 #   description = "Kinesis Rule"

@@ -8,6 +8,20 @@ resource "aws_kinesis_firehose_delivery_stream" "sensors" {
     buffer_size     = 5
     buffer_interval = 60
   }
+
+  # following defines a lambda function that would transform/process the incoming data before it gets delivered to s3
+    # processing_configuration {
+    #     enabled = "true"
+
+    #     processors {
+    #         type = "Lambda"
+
+    #         parameters {
+    #             parameter_name  = "LambdaArn"
+    #             parameter_value = "${aws_lambda_function.lambda_processor.arn}:$LATEST"
+    #         }
+    #     }
+    # }
 }
 
 resource "aws_iam_role" "firehose" {
@@ -72,3 +86,13 @@ resource "aws_iam_role_policy_attachment" "firehose_s3_kinesis" {
   role       = "${aws_iam_role.firehose.name}"
   policy_arn = "${aws_iam_policy.firehose_s3_kinesis.arn}"
 }
+
+
+
+# resource "aws_lambda_function" "lambda_processor" {
+#   filename      = "lambda.zip"
+#   function_name = "firehose_lambda_processor"
+#   role          = aws_iam_role.lambda_iam.arn
+#   handler       = "exports.handler"
+#   runtime       = "nodejs16.x"
+# }

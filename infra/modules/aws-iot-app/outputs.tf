@@ -3,12 +3,21 @@ output "iot_topic" {
 }
 
 
-output "certificate_pem" {
-    value = aws_iot_certificate.certificate_pem
+resource "local_sensitive_file" "public_key" {
+  filename = "${path.module}/../certs/test.public.key"
+  content  = aws_iot_certificate.things_cert.public_key
 }
 
-output "certificate_pem" {
-    value = aws_iot_certificate.private_key
+resource "local_sensitive_file" "private_key" {
+  filename = "${path.module}/../certs/test.private.key"
+  content  = aws_iot_certificate.things_cert.private_key
 }
 
-# need to generate a CA certificate
+resource "local_sensitive_file" "cert_pem" {
+  filename = "${path.module}/../certs/test.cert.pem"
+  content  = aws_iot_certificate.things_cert.certificate_pem
+}
+
+# output "iot_endpoint" {
+#   value = data.aws_iot_endpoint.endpointIOT.endpoint_address
+# }

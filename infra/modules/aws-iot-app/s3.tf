@@ -1,5 +1,12 @@
 resource "aws_s3_bucket" "sensor_storage" {
   bucket        = "${local.project_name}-bucket"
-  acl           = "private"
-  force_destroy = true
+    tags = {
+    Name        = "sensor bucket"
+    Environment = "Dev"
+  }
+}
+
+resource "aws_s3_bucket_acl" "example" {
+  bucket = aws_s3_bucket.sensor_storage.id
+  acl    = "private"
 }

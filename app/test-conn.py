@@ -13,8 +13,7 @@ received_all_event = threading.Event()
 
 # target_ep = 'axb6ef1ye7l5s-ats.iot.us-west-1.amazonaws.com' # endpoint for the device registered in the cloud
 # thing_name = 'ratchet'
-ca_filepath = './device-crt-and-keys/RSA-AmazonRootCA1.pem'
-
+#ca_filepath = './device-crt-and-keys/RSA-AmazonRootCA1.pem'
 # pub_topic = 'device/{}/data'.format(thing_name)
 
 

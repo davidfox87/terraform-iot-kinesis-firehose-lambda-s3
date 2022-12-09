@@ -1,13 +1,17 @@
-from awscrt import io, mqtt, auth, http
-from awsiot import mqtt_connection_builder
 import sys
 import threading
 import time
 import json
 import argparse
 import sys
-import os 
 
+from awscrt import mqtt, io
+import sys
+import threading
+import time
+from uuid import uuid4
+import json
+from awsiot import mqtt_connection_builder
 
 received_all_event = threading.Event()
 
@@ -30,7 +34,7 @@ def parse_arguments(argv):
                         type=str,
                         help="The ID that uniquely identifies this device in the AWS Region")
 
-        parser.add_argument('--target_endpoint',
+        parser.add_argument('--endpoint',
                         type=str,
                         help="endpoint for the thing device")
 
@@ -50,9 +54,14 @@ def parse_arguments(argv):
                         type=str,
                         help='topic name to publish messages to')
         
-        parser.add_argument('--message_string',
+        parser.add_argument('--message',
                         type=str,
                         help='message to publish')
+
+        parser.add_argument('--count',
+                        type=int,
+                        help='message to publish',
+                        default=5)
 
         args, _ = parser.parse_known_args(args=argv[1:])
 
@@ -103,7 +112,7 @@ def main(argv=None):
     proxy_options = None
     # establish a connection with AWS IoT Core by using the MQTT protocol
     mqtt_connection = mqtt_connection_builder.mtls_from_path(
-        endpoint=args.target_endpoint,
+        endpoint=args.endpoint,
         port=8883,
         cert_filepath=args.cert,
         pri_key_filepath=args.key,
@@ -117,7 +126,7 @@ def main(argv=None):
         http_proxy_options=proxy_options)
 
     print("Connecting to {} with client ID '{}'...".format(
-        args.target_endpoint, args.client_id))
+        args.endpoint, args.client_id))
 
     #Connect to the gateway
     while True:
@@ -138,9 +147,9 @@ def main(argv=None):
     pub_topic = args.topic
     print ('Publishing message on topic {}'.format(pub_topic))
 
-    message_count = 5
+    message_count = args.count
 
-    if args.message_string:
+    if args.message:
         if message_count == 0:
             print ("Sending messages until program killed")
         else:
@@ -148,11 +157,11 @@ def main(argv=None):
 
         publish_count = 1
         while (publish_count <= message_count) or (message_count == 0):
-            message = "{} [{}]".format(args.message_string, publish_count)
-            print("Publishing message to topic '{}': {}".format(args.message_topic, message))
+            message = "{} [{}]".format(args.message, publish_count)
+            print("Publishing message to topic '{}': {}".format(args.topic, message))
             message_json = json.dumps(message)
             mqtt_connection.publish(
-                topic=args.message_topic,
+                topic=args.topic,
                 payload=message_json,
                 qos=mqtt.QoS.AT_LEAST_ONCE)
             time.sleep(1)

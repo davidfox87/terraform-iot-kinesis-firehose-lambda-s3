@@ -5,8 +5,8 @@ resource "aws_kinesis_firehose_delivery_stream" "sensors" {
   s3_configuration {
     role_arn        = "${aws_iam_role.firehose.arn}"
     bucket_arn      = "${aws_s3_bucket.sensor_storage.arn}"
-    buffer_size     = 5
-    buffer_interval = 60
+    buffer_size     = 5  # dumps in batches of 5
+    buffer_interval = 60 # dumps every minutes to s3
   }
 
   # following defines a lambda function that would transform/process the incoming data before it gets delivered to s3

@@ -1,6 +1,8 @@
 locals {
-  project_name = "awstimeseries"
-  iot_topic    = "sensors"
+  project_name              = "awstimeseries"
+  iot_topic                 = "sensors"
+  ecr_repository_name       = "kinesis-lambda"
+  ecr_image_tag             = "0.0.1"
 }
 
 variable "sonoff_id_list" {

@@ -1,26 +1,24 @@
 # change the lambda function to use the docker image pushed to ecr
+data aws_ecr_image lambda_image {
+ depends_on = [
+   null_resource.ecr_image
+ ]
+ repository_name = local.ecr_repository_name
+ image_tag       = local.ecr_image_tag
+}
 
 resource "aws_lambda_function" "kinesis" {
-  function_name    = "${local.project_name}"
-  filename         = "${local.lambda_artifact}"
-  source_code_hash = "${base64sha256(file(local.lambda_artifact))}"
-  handler          = "de.frosner.aws.iot.Handler"
-  runtime          = "java8"
-  role             = "${aws_iam_role.lambda_exec.arn}"
-  memory_size      = 1024
-  timeout          = 5
+    function_name    = "${local.project_name}-lambda"
+ 
+    role             = "${aws_iam_role.lambda_exec.arn}"
+    timeout = 300
+    image_uri = "${aws_ecr_repository.repo.repository_url}@${data.aws_ecr_image.lambda_image.id}"
+    package_type = "Image"
 
-  vpc_config {
-    security_group_ids = ["${aws_security_group.all_out.id}"]
-    subnet_ids = ["${aws_subnet.private-1.id}"]
-  }
-
-  environment {
-    variables {
-      redis_port = "${aws_elasticache_cluster.sensors.port}"
-      redis_url = "${aws_elasticache_cluster.sensors.cache_nodes.0.address}"
-    }
-  }
+    depends_on = [
+        aws_iam_role_policy_attachment.lambda_logs,
+        aws_cloudwatch_log_group.example,
+    ]
 }
 
 resource "aws_iam_role" "lambda_exec" {
@@ -69,8 +67,17 @@ resource "aws_lambda_event_source_mapping" "event_source_mapping" {
   starting_position = "LATEST"
 }
 
+
+# This is to optionally manage the CloudWatch Log Group for the Lambda Function.
+# If skipping this resource configuration, also add "logs:CreateLogGroup" to the IAM policy below.
+resource "aws_cloudwatch_log_group" "example" {
+  name              = "/aws/lambda/${var.lambda_function_name}"
+  retention_in_days = 14
+}
+
+# See also the following AWS managed policy: AWSLambdaBasicExecutionRole
 resource "aws_iam_policy" "lambda_logging" {
-  name        = "${local.project_name}-lambda-logging"
+  name        = "lambda_logging"
   path        = "/"
   description = "IAM policy for logging from a lambda"
 
@@ -93,6 +100,15 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_logs" {
-  role       = "${aws_iam_role.lambda_exec.name}"
-  policy_arn = "${aws_iam_policy.lambda_logging.arn}"
+  role       = aws_iam_role.iam_for_lambda.name
+  policy_arn = aws_iam_policy.lambda_logging.arn
 }
+
+
+
+
+
+
+
+
+

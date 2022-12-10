@@ -1,8 +1,5 @@
 # change the lambda function to use the docker image pushed to ecr
 data aws_ecr_image lambda_image {
- depends_on = [
-   null_resource.ecr_image
- ]
  repository_name = local.ecr_repository_name
  image_tag       = local.ecr_image_tag
 }

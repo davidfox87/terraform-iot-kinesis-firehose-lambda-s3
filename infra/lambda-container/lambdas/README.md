@@ -1,4 +1,4 @@
-To test the lambda function the the docker runtime interface emulator:
+To test the lambda function using the the docker runtime interface emulator:
 1. Build the docker image locally using the docker build command
 ```
 docker build -t mylambda:latest .

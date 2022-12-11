@@ -10,7 +10,7 @@ docker run -p 9000:8080 mylambda:latest
 
 This command runs the image as a container and starts up an endpoint locally at ```localhost:90000/2015-03-31/functions/function/invocations```.
 
-3. From a new terminal window, post an event with a base64 encode message ("Hello, from David Fox")
+3. From a new terminal window, post an event with a base64-encoded message ("Hello, from David Fox")
 Run 
 ```
 python3 test-lambda-client.py

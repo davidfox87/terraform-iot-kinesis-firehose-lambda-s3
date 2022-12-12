@@ -18,9 +18,10 @@ def handler(event, context):
         
         #Kinesis data is base64 encoded so decode here
         payload=base64.b64decode(record["kinesis"]["data"])
-        print("Decoded payload: " + str(payload))
+        data = json.loads(payload)
 
-        print('hello')
+        print("name is {} and he is {} years old" 
+                .format(data['name'], data['age']))
 
     LOGGER.info('Successfully processed {} records'.format(len(event['records'])))
     return {'records': output}

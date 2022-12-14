@@ -4,6 +4,7 @@ import time
 import json
 import argparse
 import sys
+import base64
 
 from awscrt import mqtt, io
 import sys
@@ -53,10 +54,6 @@ def parse_arguments(argv):
         parser.add_argument('--topic',
                         type=str,
                         help='topic name to publish messages to')
-        
-        parser.add_argument('--message',
-                        type=str,
-                        help='message to publish')
 
         parser.add_argument('--count',
                         type=int,
@@ -149,23 +146,23 @@ def main(argv=None):
 
     message_count = args.count
 
-    if args.message:
-        if message_count == 0:
-            print ("Sending messages until program killed")
-        else:
-            print ("Sending {} message(s)".format(message_count))
 
-        publish_count = 1
-        while (publish_count <= message_count) or (message_count == 0):
-            message = "{} [{}]".format(args.message, publish_count)
-            print("Publishing message to topic '{}': {}".format(args.topic, message))
-            message_json = json.dumps(message)
-            mqtt_connection.publish(
-                topic=args.topic,
-                payload=message_json,
-                qos=mqtt.QoS.AT_LEAST_ONCE)
-            time.sleep(1)
-            publish_count += 1
+    if message_count == 0:
+        print ("Sending messages until program killed")
+    else:
+        print ("Sending {} message(s)".format(message_count))
+
+    message = base64.b64encode(json.dumps({"name": "David", "age": 35}).encode('utf-8'))
+    publish_count = 1
+    while (publish_count <= message_count) or (message_count == 0):
+        message = "{} [{}]".format(message, publish_count)
+        print("Publishing message to topic '{}': {}".format(args.topic, message))
+        mqtt_connection.publish(
+            topic=args.topic,
+            payload=message,
+            qos=mqtt.QoS.AT_LEAST_ONCE)
+        time.sleep(1)
+        publish_count += 1
 
 
     # Disconnect

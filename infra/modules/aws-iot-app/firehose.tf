@@ -10,6 +10,12 @@ resource "aws_kinesis_firehose_delivery_stream" "sensors" {
   
 
   # following defines a lambda function that would transform/process the incoming data before it gets delivered to s3
+  # Kinesis Data Firehose then invokes the specified Lambda function 
+  # asynchronously with each buffered batch using the AWS Lambda synchronous 
+  # invocation mode. The transformed data is sent from Lambda to Kinesis Data
+  # Firehose. Kinesis Data Firehose then sends it to the destination when 
+  # the specified destination buffering size or buffering interval is reached, 
+  # whichever happens first.
     processing_configuration {
         enabled = "true"
 

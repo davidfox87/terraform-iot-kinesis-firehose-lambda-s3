@@ -28,6 +28,7 @@ def handler(event, context):
             "age": data["age"]
         }
 
+        # https://docs.aws.amazon.com/firehose/latest/dev/data-transformation.html
         output.append({
             'recordId': record["recordId"],
             'result': 'Ok',

@@ -1,27 +1,30 @@
 resource "aws_kinesis_firehose_delivery_stream" "sensors" {
   name        = "${local.project_name}-s3"
-  destination = "s3"
+  destination = "extended_s3"
 
-  s3_configuration {
+  extended_s3_configuration {
     role_arn        = "${aws_iam_role.firehose.arn}"
     bucket_arn      = "${aws_s3_bucket.sensor_storage.arn}"
     buffer_size     = 5  # dumps in batches of 5
     buffer_interval = 60 # dumps every minutes to s3
-  }
+  
 
   # following defines a lambda function that would transform/process the incoming data before it gets delivered to s3
-    # processing_configuration {
-    #     enabled = "true"
+    processing_configuration {
+        enabled = "true"
 
-    #     processors {
-    #         type = "Lambda"
+        processors {
+            type = "Lambda"
 
-    #         parameters {
-    #             parameter_name  = "LambdaArn"
-    #             parameter_value = "${aws_lambda_function.lambda_processor.arn}:$LATEST"
-    #         }
-    #     }
-    # }
+            parameters {
+                parameter_name  = "LambdaArn"
+                parameter_value = "${aws_lambda_function.kinesis.arn}:$LATEST"
+            }
+        }
+    }
+  }
+
+  tags = var.tags
 }
 
 resource "aws_iam_role" "firehose" {
@@ -73,7 +76,8 @@ resource "aws_iam_policy" "firehose_s3_kinesis" {
             "Action": [
                 "kinesis:DescribeStream",
                 "kinesis:GetShardIterator",
-                "kinesis:GetRecords"
+                "kinesis:GetRecords",
+                "kinesis:ListShards"
             ],
             "Resource": "${aws_kinesis_stream.sensors.arn}"
         }
@@ -86,13 +90,3 @@ resource "aws_iam_role_policy_attachment" "firehose_s3_kinesis" {
   role       = "${aws_iam_role.firehose.name}"
   policy_arn = "${aws_iam_policy.firehose_s3_kinesis.arn}"
 }
-
-
-
-# resource "aws_lambda_function" "lambda_processor" {
-#   filename      = "lambda.zip"
-#   function_name = "firehose_lambda_processor"
-#   role          = aws_iam_role.lambda_iam.arn
-#   handler       = "exports.handler"
-#   runtime       = "nodejs16.x"
-# }

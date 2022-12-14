@@ -23,5 +23,16 @@ def handler(event, context):
         print("name is {} and he is {} years old" 
                 .format(data['name'], data['age']))
 
-    LOGGER.info('Successfully processed {} records'.format(len(event['records'])))
+        out = {
+            "name": data['name'],
+            "age": data["age"]
+        }
+
+        output.append({
+            'recordId': record["recordId"],
+            'result': 'Ok',
+            'data': base64.b64encode(json.dumps(out).encode('utf-8')).decode('utf-8')
+        })
+
+    LOGGER.info('Successfully processed {} records'.format(len(output)))
     return {'records': output}

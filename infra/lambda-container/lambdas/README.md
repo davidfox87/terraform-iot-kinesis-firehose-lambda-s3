@@ -17,3 +17,8 @@ python3 test-lambda-client.py
 ```
 
 This command will use the python requests library to send a post request to the container. It will invoke the lambda function running in the container image and will return a response.
+
+
+
+# creating lambda by zipping
+zip function.zip app.py

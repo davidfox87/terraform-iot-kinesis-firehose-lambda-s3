@@ -3,13 +3,16 @@ data aws_ecr_image lambda_image {
  repository_name = local.ecr_repository_name
  image_tag       = local.ecr_image_tag
 }
+# data "aws_ecr_repository" "lambda_image" {
+#   name = local.ecr_repository_name
+# }
+
 
 resource "aws_lambda_function" "kinesis" {
     function_name    = "${local.project_name}-lambda"
- 
     role             = "${aws_iam_role.lambda_exec.arn}"
     timeout = 300
-    image_uri = "${aws_ecr_repository.repo.repository_url}@${data.aws_ecr_image.lambda_image.id}"
+    image_uri = "880572800141.dkr.ecr.us-west-1.amazonaws.com/kinesis-lambda:latest"
     package_type = "Image"
 
     depends_on = [
@@ -60,7 +63,7 @@ resource "aws_lambda_event_source_mapping" "event_source_mapping" {
 # This is to optionally manage the CloudWatch Log Group for the Lambda Function.
 # If skipping this resource configuration, also add "logs:CreateLogGroup" to the IAM policy below.
 resource "aws_cloudwatch_log_group" "example" {
-  name              = "/aws/lambda/${var.lambda_function_name}"
+  name              = "/aws/lambda/${local.project_name}-lambda"
   retention_in_days = 14
 }
 
@@ -89,7 +92,7 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_logs" {
-  role       = aws_iam_role.iam_for_lambda.name
+  role       = aws_iam_role.lambda_exec.name
   policy_arn = aws_iam_policy.lambda_logging.arn
 }
 
@@ -101,3 +104,11 @@ resource "aws_iam_role_policy_attachment" "lambda_logs" {
 
 
 
+
+# resource "aws_lambda_function" "lambda_processor" {
+#   filename      = "lambda.zip"
+#   function_name = "firehose_lambda_processor"
+#   role          = aws_iam_role.lambda_iam.arn
+#   handler       = "exports.handler"
+#   runtime       = "nodejs16.x"
+# }

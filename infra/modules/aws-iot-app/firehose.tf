@@ -15,7 +15,6 @@ resource "aws_kinesis_firehose_delivery_stream" "sensors" {
 
         processors {
             type = "Lambda"
-
             parameters {
                 parameter_name  = "LambdaArn"
                 parameter_value = "${aws_lambda_function.kinesis.arn}:$LATEST"

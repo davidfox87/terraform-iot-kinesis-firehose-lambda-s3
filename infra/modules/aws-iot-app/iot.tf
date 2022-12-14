@@ -21,19 +21,19 @@ resource "aws_iam_role" "iot" {
   name = "${local.project_name}-iot-role"
 
   assume_role_policy = <<EOF
-  {
-    "Version": "2012-10-17",
-    "Statement": [
-      {
-        "Effect": "Allow",
-        "Principal": {
-          "Service": "iot.amazonaws.com"
-        },
-        "Action": "sts:AssumeRole"
-      }
-    ]
-  }
-  EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "iot.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
 
 }
 
@@ -41,44 +41,41 @@ resource "aws_iam_role_policy" "iot_firehose" {
   name = "${local.project_name}-iot-firehose-policy"
   role = "${aws_iam_role.iot.id}"
 
-  policy = <<EOF
-  {
-    "Version": "2012-10-17",
-    "Statement": [
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
       {
-        "Effect": "Allow",
-        "Action": [
-          "firehose:PutRecord"
+        Action = [
+          "firehose:PutRecord",
         ],
-        "Resource": [
+        Resource = [
           "${aws_kinesis_firehose_delivery_stream.sensors.arn}"
-        ]
-      }
+        ],
+        Effect = "Allow"
+      },
     ]
-  }
-  EOF
-  
+  })
 }
+
 
 # Writes records to Kinesis Data Streams.
 resource "aws_iam_role_policy" "iot_kinesis" {
   name = "${local.project_name}-iot-kinesis-policy"
   role = "${aws_iam_role.iot.id}"
 
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "kinesis:PutRecord" 
-      ],
-      "Resource": [
-        "${aws_kinesis_stream.sensors.arn}"
-      ]
-    }
-  ]
-}
-EOF
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "kinesis:PutRecord",
+        ],
+        Resource = [
+          "${aws_kinesis_stream.sensors.arn}"
+        ],
+        Effect = "Allow"
+      },
+    ]
+  })
 }

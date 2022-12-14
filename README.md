@@ -2,7 +2,6 @@
 
 ```
 terraform init
-terraform get
 terraform plan
 terraform apply
 ```

@@ -48,6 +48,7 @@ resource "aws_iam_role_policy" "iot_firehose" {
       {
         Action = [
           "firehose:PutRecord",
+          "firehose:PutRecordBatch",
         ],
         Resource = [
           "${aws_kinesis_firehose_delivery_stream.sensors.arn}"

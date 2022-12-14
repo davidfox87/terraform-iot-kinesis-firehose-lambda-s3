@@ -79,6 +79,16 @@ resource "aws_iam_policy" "firehose_s3_kinesis" {
                 "kinesis:ListShards"
             ],
             "Resource": "${aws_kinesis_stream.sensors.arn}"
+        },
+        {
+           "Effect": "Allow", 
+           "Action": [
+               "lambda:InvokeFunction", 
+               "lambda:GetFunctionConfiguration" 
+           ],
+           "Resource": [
+               "${aws_lambda_function.kinesis.arn}"
+           ]
         }
     ]
 }

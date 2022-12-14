@@ -13,7 +13,7 @@ def handler(event, context):
     LOGGER.info('Event: %s', event)
     
     output = []
-    for record in event['records']:
+    for record in event['Records']:
         LOGGER.info('record: %s', record)
         
         #Kinesis data is base64 encoded so decode here

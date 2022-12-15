@@ -23,7 +23,7 @@ resource "aws_kinesis_firehose_delivery_stream" "sensors" {
             type = "Lambda"
             parameters {
                 parameter_name  = "LambdaArn"
-                parameter_value = "${aws_lambda_function.kinesis.arn}"
+                parameter_value = "${aws_lambda_function.lambda_processor.arn}"
             }
         }
     }
@@ -93,7 +93,7 @@ resource "aws_iam_policy" "firehose_s3_kinesis" {
                "lambda:GetFunctionConfiguration" 
            ],
            "Resource": [
-               "${aws_lambda_function.kinesis.arn}"
+               "${aws_lambda_function.lambda_processor.arn}"
            ]
         }
     ]

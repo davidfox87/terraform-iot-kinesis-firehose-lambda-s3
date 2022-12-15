@@ -13,18 +13,19 @@ def handler(event, context):
     LOGGER.info('Event: %s', event)
     
     output = []
-    for record in event['Records']:
+    for record in event['records']:
         LOGGER.info('record: %s', record)
         
         #Kinesis data is base64 encoded so decode here
-        payload=base64.b64decode(record["kinesis"]["data"])
+        payload=base64.b64decode(record["data"])
         data = json.loads(payload)
 
-        print("name is {} and he is {} years old" 
-                .format(data['name'], data['age']))
+        LOGGER.info('data: %s', data)
+        # print("name is {} and he is {} years old" 
+        #         .format(data["name"], data["age"]))
 
         out = {
-            "name": data['name'],
+            "name": data["name"],
             "age": data["age"]
         }
 

@@ -1,14 +1,14 @@
 # change the lambda function to use the docker image pushed to ecr
-data aws_ecr_image lambda_image {
- repository_name = local.ecr_repository_name
- image_tag       = local.ecr_image_tag
-}
+# data aws_ecr_image lambda_image {
+#  repository_name = local.ecr_repository_name
+#  image_tag       = local.ecr_image_tag
+# }
 # data "aws_ecr_repository" "lambda_image" {
 #   name = local.ecr_repository_name
 # }
 
 
-resource "aws_lambda_function" "kinesis" {
+resource "aws_lambda_function" "lambda_processor" {
     function_name    = "${local.project_name}-lambda"
     role             = "${aws_iam_role.lambda_exec.arn}"
     timeout = 300
@@ -51,13 +51,13 @@ resource "aws_iam_role_policy_attachment" "lambda_kinesis" {
   policy_arn = "${data.aws_iam_policy.AWSLambdaKinesisExecutionRole.arn}"
 }
 
-resource "aws_lambda_event_source_mapping" "event_source_mapping" {
-  batch_size        = 10
-  event_source_arn  = "${aws_kinesis_stream.sensors.arn}"
-  enabled           = true
-  function_name     = "${aws_lambda_function.kinesis.id}"
-  starting_position = "LATEST"
-}
+# resource "aws_lambda_event_source_mapping" "event_source_mapping" {
+#   batch_size        = 10
+#   event_source_arn  = "${aws_kinesis_stream.sensors.arn}"
+#   enabled           = true
+#   function_name     = "${aws_lambda_function.kinesis.id}"
+#   starting_position = "LATEST"
+# }
 
 
 # This is to optionally manage the CloudWatch Log Group for the Lambda Function.

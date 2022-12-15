@@ -18,10 +18,6 @@ resource "local_sensitive_file" "cert_pem" {
   content  = aws_iot_certificate.things_cert.certificate_pem
 }
 
-# output "iot_endpoint" {
-#   value = data.aws_iot_endpoint.endpointIOT.endpoint_address
-# }
-
 output "lambda_name" {
- value = aws_lambda_function.kinesis.id
+ value = aws_lambda_function.lambda_processor.id
 }

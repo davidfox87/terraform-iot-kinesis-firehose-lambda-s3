@@ -17,6 +17,7 @@ def handler(event, context):
         LOGGER.info('record: %s', record)
         
         #Kinesis data is base64 encoded so decode here
+
         payload=base64.b64decode(record["data"])
         data = json.loads(payload)
 

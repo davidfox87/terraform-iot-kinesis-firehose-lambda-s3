@@ -41,6 +41,6 @@ message = json.dumps(data, cls=Base64Encoder)
 
 x = base64.b64encode(json.dumps({'name': "David"}).encode('utf-8'))
 y = base64.b64decode(x)
-print(json.loads(y))
+print(json.loads(base64.b64decode(x)))
 
 x = requests.post(url, data=message)

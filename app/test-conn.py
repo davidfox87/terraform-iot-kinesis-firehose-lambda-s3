@@ -152,10 +152,11 @@ def main(argv=None):
     else:
         print ("Sending {} message(s)".format(message_count))
 
-    message = json.dumps({})
+    message = '{"name": "David", "age": "35"}'
+    #base64.b64encode(json.dumps({'name': "David", "age": "35"}).encode('utf-8'))
     publish_count = 1
     while (publish_count <= message_count) or (message_count == 0):
-        message = "{} [{}]".format(message, publish_count)
+        #message = "{} [{}]".format(message, publish_count)
         print("Publishing message to topic '{}': {}".format(args.topic, message))
         mqtt_connection.publish(
             topic=args.topic,

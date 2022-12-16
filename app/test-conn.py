@@ -14,12 +14,10 @@ from uuid import uuid4
 import json
 from awsiot import mqtt_connection_builder
 
-received_all_event = threading.Event()
+import pandas as pd
 
-# target_ep = 'axb6ef1ye7l5s-ats.iot.us-west-1.amazonaws.com' # endpoint for the device registered in the cloud
-# thing_name = 'ratchet'
-#ca_filepath = './device-crt-and-keys/RSA-AmazonRootCA1.pem'
-# pub_topic = 'device/{}/data'.format(thing_name)
+
+received_all_event = threading.Event()
 
 
 def parse_arguments(argv):
@@ -152,26 +150,33 @@ def main(argv=None):
     else:
         print ("Sending {} message(s)".format(message_count))
 
-    message = '{"name": "David", "age": "35"}'
-    #base64.b64encode(json.dumps({'name': "David", "age": "35"}).encode('utf-8'))
-    publish_count = 1
-    while (publish_count <= message_count) or (message_count == 0):
-        #message = "{} [{}]".format(message, publish_count)
-        print("Publishing message to topic '{}': {}".format(args.topic, message))
-        mqtt_connection.publish(
-            topic=args.topic,
-            payload=message,
-            qos=mqtt.QoS.AT_LEAST_ONCE)
-        time.sleep(1)
-        publish_count += 1
 
+    df = pd.read_csv('records.csv')
+    df['json'] = df.apply(lambda x: x.to_json(), axis=1)
+    messages = df['json'].values
 
+    for message in messages:
+        publish(mqtt_connection, args.topic, message)
+    
     # Disconnect
     print("Disconnecting...")
     disconnect_future = mqtt_connection.disconnect()
     disconnect_future.result()
     print("Disconnected!")
 
+
+
+def publish(mqtt_connection, topic, message):
+    print("Publishing message to topic '{}': {}".format(topic, message))
+    mqtt_connection.publish(
+        topic=topic,
+        payload=message,
+        qos=mqtt.QoS.AT_LEAST_ONCE)
+    time.sleep(1)
+    publish_count += 1
+
+
 if __name__ == '__main__':
     main()
 
+    

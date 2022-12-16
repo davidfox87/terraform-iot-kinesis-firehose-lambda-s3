@@ -12,4 +12,16 @@ resource "aws_s3_bucket_acl" "example" {
 }
 
 
+resource "aws_s3_bucket" "athena_results" {
+  bucket        = "${local.project_name}-bucket-athena-results"
+    tags = {
+        Name        = "athena query bucket"
+        Environment = "Dev"
+  }
+}
+
+resource "aws_s3_bucket_acl" "athena_bucket" {
+  bucket = aws_s3_bucket.athena_results.id
+  acl    = "private"
+}
 
